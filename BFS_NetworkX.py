@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Dec 28 02:59:44 2017
-# Breadth First Search, asumsi urutan = list di V
-@author: taufi
+Breadth First Search, asumsi urutan = list di V
+http://blog-sutanto.blogspot.co.id/2018/01/bfs-dfs-dengan-networkx-di-python.html
+@author: Taufik Sutanto
 """
 import networkx as nx
 from my_NetworkX_lib import buildGraph, drawGraph
