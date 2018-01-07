@@ -6,16 +6,17 @@ My Personal NetworkX Functions
 """
 import matplotlib.pyplot as plt, networkx as nx
 
-def buildGraph(V,E=None,Ew=None):
+def buildGraph(V,E=None):
     G = nx.Graph()
     for v in V:
         G.add_node(v)
     if E:
-        for e, w in zip(E, Ew):
-            if Ew:
-                G.add_edge(e[0],e[1], weight=w)
-            else:
-                G.add_edge(e[0],e[1])
+        if len(E[0])>2:
+            for v1, v2, w in E:
+                G.add_edge(v1,v2, weight=w)
+        else:
+            for v1, v2 in E:
+                G.add_edge(v1,v2)
     return G
 
 def drawGraph(G, file ='graph.png',labels=False,edge_Label=False, gType = 'spring'):
