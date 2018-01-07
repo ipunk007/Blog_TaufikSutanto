@@ -31,5 +31,5 @@ while VDFS: # VDFS not empty
     else: #Backtrack
         v = stack[-1]; del stack[-1]
         
-drawGraph(G, file="GraphAwal.png", labels = True, edge_labels=False, gType = 'spring')
-drawGraph(DFS, file="DFS.png", labels = True, edge_labels=False, gType = 'spring')
+drawGraph(G, file="GraphAwal.png", labels = True, edge_Label=False, gType = 'spring')
+drawGraph(DFS, file="DFS.png", labels = True, edge_Label=False, gType = 'spring')
