@@ -30,5 +30,5 @@ for vertices in Levels:
             if len(nx.cycle_basis(BFS,root))>0:
                 BFS.remove_edge(v1,v2)
                 
-drawGraph(G, file="GraphAwal.png", labels = True, edge_labels=False, gType = 'spring')
-drawGraph(BFS, file="BFS.png", labels = True, edge_labels=False, gType = 'spring')
+drawGraph(G, file="GraphAwal.png", labels = True, edge_Label=False, gType = 'spring')
+drawGraph(BFS, file="BFS.png", labels = True, edge_Label=False, gType = 'spring')
