@@ -95,7 +95,7 @@ def sentiment(Tweets): #need a clean tweets
     Sub.sort(key=lambda tup: tup[0])
     return (Sen, Sub)
 
-def printSA(SA, N = 3, emo = 'positif'):
+def printSA(SA, N = 1, emo = 'positif'):
     Sen, Sub = SA
     e = emo.lower().strip()
     if e=='positif' or e=='positive':
@@ -103,7 +103,7 @@ def printSA(SA, N = 3, emo = 'positif'):
     elif e=='negatif' or e=='negative':
         tweets = Sen[:N]
     elif e=='netral' or e=='neutral':
-        net = [(abs(score),t) for score,t in Sen if abs(score)<0.05]
+        net = [(abs(score),t) for score,t in Sen if abs(score)<0.01]
         net.sort(key=lambda tup: tup[0])
         tweets = net[:N]
     elif e=='subjektif' or e=='subjective':
