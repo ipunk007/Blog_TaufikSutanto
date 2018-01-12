@@ -5,7 +5,6 @@ MIT License with Acknowledgement
 @author: Taufik Sutanto
 Simple Social Media Analytics ver 0.11.1
 https://taufiksutanto.blogspot.com/2018/01/easiest-social-media-analytics.html
-Notes: the code is given 'as is' & without warranty, you are responsible for your own action
 """
 from pattern.web import Twitter, URL
 from nltk.tokenize import TweetTokenizer; Tokenizer = TweetTokenizer(reduce_len=True)
@@ -19,7 +18,7 @@ from bs4 import BeautifulSoup as bs
 from sklearn.decomposition import LatentDirichletAllocation as LDA
 import re, networkx as nx, matplotlib.pyplot as plt, operator, numpy as np,community
 
-def crawl(topic, N=300, Nbatch = 25):
+def crawl(topic, N=100, Nbatch = 25):
     t = Twitter() # language='en','id'
     M = N//Nbatch #integer
     i, Tweets, keepCrawling = None, [], True
@@ -31,16 +30,21 @@ def crawl(topic, N=300, Nbatch = 25):
                     i = tweet.id
                 except:
                     print("Twitter Limit reached")
-                    keepCrawling = False
+                    keepCrawling = False # Second Break (outer loop)
                     break
+        else:
+            break
     print('Making sure we get the full tweets, please wait ...')
     for i, tweet in enumerate(tqdm(Tweets)):
-        webPage = URL(tweet.url).download()
-        soup = bs(webPage,'html.parser')
-        full_tweet = soup.find_all('p',class_='TweetTextSize')[0] #modify this to get all replies
-        full_tweet = bs(str(full_tweet),'html.parser').text
-        Tweets[i]['fullTxt'] = full_tweet
-    print('Done!... you may carry on ... :) ...')
+        try:
+            webPage = URL(tweet.url).download()
+            soup = bs(webPage,'html.parser')
+            full_tweet = soup.find_all('p',class_='TweetTextSize')[0] #modify this to get all replies
+            full_tweet = bs(str(full_tweet),'html.parser').text
+            Tweets[i]['fullTxt'] = full_tweet
+        except:
+            Tweets[i]['fullTxt'] = tweet.txt
+    print('Done!... Total terdapat {0} tweet'.format(len(Tweets)))
     return Tweets        
 
 def strip_non_ascii(string,symbols):
@@ -49,7 +53,7 @@ def strip_non_ascii(string,symbols):
     return ''.join(stripped)
 
 def cleanTweets(Tweets):
-    factory = StopWordRemoverFactory(); stopwords = set(factory.get_stop_words()+['rt'])
+    factory = StopWordRemoverFactory(); stopwords = set(factory.get_stop_words()+['rt','pic','com','yg','ga'])
     factory = StemmerFactory(); stemmer = factory.create_stemmer()
     for i,tweet in enumerate(tqdm(Tweets)):
         txt = tweet['fullTxt'] # if you want to ignore retweets  ==> if not re.match(r'^RT.*', txt):
@@ -65,7 +69,10 @@ def cleanTweets(Tweets):
     return Tweets
 
 def translate(txt,language='en'): # txt is a TextBlob object
-    return txt.translate(to=language)
+    try:
+        return txt.translate(to=language)
+    except:
+        return txt
 
 def sentiment(Tweets): #need a clean tweets
     print("Calculating Sentiment and Subjectivity Score: ... ")
@@ -95,7 +102,7 @@ def sentiment(Tweets): #need a clean tweets
     Sub.sort(key=lambda tup: tup[0])
     return (Sen, Sub)
 
-def printSA(SA, N = 1, emo = 'positif'):
+def printSA(SA, N = 2, emo = 'positif'):
     Sen, Sub = SA
     e = emo.lower().strip()
     if e=='positif' or e=='positive':
@@ -138,7 +145,7 @@ def drawGraph(G, Label = False):
         nx.draw_networkx_labels(G,pos)
     nx.draw_networkx_edges(G,pos,width=4); plt.show()
 
-def Graph(Tweets, plot = True, Label = True): # Need the Tweets Before cleaning
+def Graph(Tweets, Label = True): # Need the Tweets Before cleaning
     print("Please wait, building Graph .... ")
     G=nx.Graph()
     for tweet in tqdm(Tweets):
@@ -150,9 +157,9 @@ def Graph(Tweets, plot = True, Label = True): # Need the Tweets Before cleaning
                 G.add_node(usr); G.add_edge(tweet.author,usr)
     Nn=G.number_of_nodes();Ne=G.number_of_edges()
     print('Finished. There are %d nodes and %d edges in the Graph.' %(Nn,Ne))
-    if plot and Label:
+    if Label:
         drawGraph(G, Label = True)
-    elif plot:
+    else:
         drawGraph(G)
     return G
 
